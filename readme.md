@@ -1,7 +1,7 @@
 # Coleccionista #
 
-Helper class that streams files one by one in one stream.
+Helper stream class that streams files one by one in one stream.
 
 ## Events ##
-    __itemstart__ — triggers when new file open
-    __itemend__ — triggers when file stream end
+__itemstart__ — triggers when new file open
+__itemend__ — triggers when file stream end
