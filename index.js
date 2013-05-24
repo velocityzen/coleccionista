@@ -24,13 +24,12 @@ Coleccionista.prototype.next = function() {
 		file = fs.createReadStream(this.files[this.fileIndex++], this.o);
 
 	file
-		.on('open', function(){
+		.on('open', function() {
 			self.emit('itemstart');
 		})
 		.on('end', function(){
-			if (EventEmitter.listenerCount(self, 'itemend')) {
-				self.emit('itemend', end);
-			} else if (!end) {
+			self.emit('itemend');
+			if(!end) {
 				self.next();
 			}
 		})

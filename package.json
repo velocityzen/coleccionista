@@ -1,5 +1,5 @@
 {
-	"name": "Coleccionista",
+	"name": "coleccionista",
 	"version": "0.0.1",
 	"description": "Helper class that streams files one by one.",
 	"keywords": ["stream", "files", "collect"],
