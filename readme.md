@@ -18,3 +18,4 @@ stream.pipe(otherStream);
 ### Additional events ###
 * __itemstart__ — triggers when new file open
 * __itemend__ — triggers when file stream end
+* __error__ — triggers on file errors

@@ -1,12 +1,11 @@
 "use strict";
-var inherits = require('util').inherits;
-var fs = require('fs');
-var EventEmitter = require("events").EventEmitter;
-var PassThrough = require('stream').PassThrough;
+var inherits = require("util").inherits;
+var fs = require("fs");
+var PassThrough = require("stream").PassThrough;
 
 var Coleccionista = function(filesOrStreams, options) {
 	if(!filesOrStreams.length) {
-		throw new Error('Files argument required');
+		throw new Error("Files argument required");
 	}
 
 	PassThrough.call(this, options);
@@ -20,16 +19,19 @@ inherits(Coleccionista, PassThrough);
 
 Coleccionista.prototype.next = function() {
 	var self = this,
-		end = (this.fileIndex === this.files.length-1),
+		end = (this.fileIndex === this.files.length - 1),
 		f = this.files[this.fileIndex++],
-		file = typeof f === 'string' ? fs.createReadStream(f, this.o) : f;
+		file = typeof f === "string" ? fs.createReadStream(f, this.o) : f;
 
 	file
-		.on('open', function() {
-			self.emit('itemstart');
+		.on("error", function(err) {
+			self.emit("error", err);
 		})
-		.on('end', function(){
-			self.emit('itemend');
+		.on("open", function() {
+			self.emit("itemstart");
+		})
+		.on("end", function(){
+			self.emit("itemend");
 			if(!end) {
 				self.next();
 			}
