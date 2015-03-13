@@ -1,19 +1,44 @@
 "use strict";
-var inherits = require("util").inherits;
 var fs = require("fs");
+let path = require("path");
 var PassThrough = require("stream").PassThrough;
+var inherits = require("util").inherits;
+var glob = require("glob");
+var isArray = Array.isArray;
 
-var Coleccionista = function(filesOrStreams, options) {
-	if(!filesOrStreams.length) {
-		throw new Error("Files argument required");
-	}
+var mapFiles = function (srcPath, files) {
+	return files.map(function(filePath){
+		return path.join(srcPath, filePath);
+	});
+};
+
+var Coleccionista = function(options, cb) {
+	let self = this;
 
 	PassThrough.call(this, options);
 
-	this.files = filesOrStreams;
 	this.fileIndex = 0;
-	this.o = options;
-	this.next();
+	this.o = options.stream;
+
+	if(typeof options.files === "string") {
+		glob(options.files, {cwd: options.path}, function(err, files) {
+			if(err) {
+				cb(err);
+			} if(!files.length) {
+				cb(new Error(options.path ? ("No files found in path " + options.path) : "No files found"));
+			} else {
+				self.files = files;
+				cb(null, files);
+				self.next();
+			}
+		});
+	} else if(isArray(options.files)) {
+		this.files = options.path ? mapFiles(options.path, options.files) : options.files;
+		cb(null, this.files);
+		self.next();
+	} else {
+		throw new Error("Files option required");
+	}
 };
 inherits(Coleccionista, PassThrough);
 
