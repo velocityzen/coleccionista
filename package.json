@@ -1,6 +1,6 @@
 {
   "name": "coleccionista",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Helper class that streams files one by one.",
   "keywords": [
     "stream",
@@ -8,8 +8,6 @@
     "collect"
   ],
   "author": "Alexey Novikov (http://2dubs.com)",
-  "preferGlobal": true,
-  "private": false,
   "engines": {
     "node": "^0.10.0",
     "iojs": "^1.0.0"

@@ -12,35 +12,38 @@ var mapFiles = function (srcPath, files) {
 	});
 };
 
-var Coleccionista = function(options, cb) {
+var Coleccionista = function(options) {
 	let self = this;
 
 	PassThrough.call(this, options);
 
 	this.fileIndex = 0;
 	this.o = options.stream;
+	this.path = options.path ? path.resolve(options.path) : undefined;
 
 	if(typeof options.files === "string") {
-		glob(options.files, {cwd: options.path}, function(err, files) {
+		glob(options.files, {cwd: self.path}, function(err, files) {
 			if(err) {
-				cb(err);
+				self.emit("error", err);
 			} if(!files.length) {
-				cb(new Error(options.path ? ("No files found in path " + options.path) : "No files found"));
+				self.emit("error", new Error(self.path ? ("No files found in path " + self.path) : "No files found"));
 			} else {
-				self.files = files;
-				cb(null, files);
-				self.next();
+				self.ready(files);
 			}
 		});
 	} else if(isArray(options.files)) {
-		this.files = options.path ? mapFiles(options.path, options.files) : options.files;
-		cb(null, this.files);
-		self.next();
+		self.ready(options.files);
 	} else {
 		throw new Error("Files option required");
 	}
 };
 inherits(Coleccionista, PassThrough);
+
+Coleccionista.prototype.ready = function(files) {
+	this.files = this.path ? mapFiles(this.path, files) : files;
+	this.emit("ready", this.files);
+	this.next();
+};
 
 Coleccionista.prototype.next = function() {
 	var self = this,
@@ -53,10 +56,10 @@ Coleccionista.prototype.next = function() {
 			self.emit("error", err);
 		})
 		.on("open", function() {
-			self.emit("itemstart");
+			self.emit("itemstart", f);
 		})
 		.on("end", function(){
-			self.emit("itemend");
+			self.emit("itemend", f);
 			if(!end) {
 				self.next();
 			}
